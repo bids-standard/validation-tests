@@ -1,0 +1,93 @@
+- rules:
+    - rules.dataset_metadata.dataset_description
+  does: pass
+  contexts:
+    # Minimal
+    - path: /dataset_description.json
+      json: {
+        "Name": "Test dataset",
+        "BIDSVersion": "1.0.0"
+      }
+    # Complete raw
+    - path: /dataset_description.json
+      json: {
+        "Name": "Test dataset",
+        "BIDSVersion": "1.0.0",
+        "DatasetType": "raw",
+        "License": "CC0",
+        "Authors": ["Winken", "Blinken", "Nodd"],
+        "Acknowledgements": "We stand on the shoulders of giants.",
+        "HowToAcknowledge": "Pour one out.",
+        "Funding": ["Highway robbery"],
+        "EthicsApprovals": ["We don't need no stinkin' badges."],
+        "ReferencesAndLinks": ["Who shot JR?", "Dammit, Janet", "http://zombo.com"],
+        "DatasetDOI": "doi:looklikeicare",
+        "GeneratedBy": [
+          {
+            "Name": "Manual",
+          }
+        ],
+        "SourceDatasets": [
+          "URL": "gopher://hole",
+        ]
+      }
+
+- rules:
+    - rules.dataset_metadata.dataset_description
+    - rules.dataset_metadata.derivative_description
+  does: pass
+  contexts:
+    # Minimal derivative
+    - path: /dataset_description.json
+      json: {
+        "Name": "Test dataset",
+        "BIDSVersion": "1.0.0",
+        "DatasetType": "derivative",
+        "GeneratedBy": [
+          {
+            "Name": "Manual",
+          }
+        ],
+      }
+
+- rules:
+    - rules.dataset_metadata.dataset_description
+    - rules.dataset_metadata.dataset_description_with_genetics
+  does: pass
+  contexts:
+    # Minimal with genetics
+    - path: /dataset_description.json
+      dataset:
+        files: ["/dataset_description.json", "/genetic_info.json"],
+      json: {
+        "Name": "Test dataset",
+        "BIDSVersion": "1.0.0",
+        "Genetics": {
+          "Dataset": "https://some.domain/datasets/identifier",
+        }
+      }
+
+- rules:
+    - rules.dataset_metadata.dataset_description
+    - rules.dataset_metadata.derivative_description
+    - rules.dataset_metadata.dataset_description_with_genetics
+  does: fail
+  contexts:
+    - path: /dataset_description.json
+      json: {}
+    - path: /dataset_description.json
+      json: {
+        "Name": "Test dataset"
+      }
+    - path: /dataset_description.json
+      json: {
+        "BIDSVersion": "1.0.0"
+      }
+
+- rules:
+    - rules.dataset_metadata.dataset_description
+    - rules.dataset_metadata.derivative_description
+    - rules.dataset_metadata.dataset_description_with_genetics
+  does: not-apply
+  contexts:
+    - path: /any/other/file
